@@ -1,0 +1,23 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: de_mysql
+    volumes:
+      - ./dataset:/tmp/dataset
+      - ./load_dataset_into_mysql:/tmp/load_dataset
+    ports:
+      - "3307:3306"
+    # env_file: .env
+    environment:
+      - MYSQL_DATABASE=metastore_db
+      - MYSQL_ROOT_USER=root
+      - MYSQL_USER=admin
+      - MYSQL_PASSWORD=admin
+      - MYSQL_ROOT_PASSWORD=admin
+    networks:
+      - data_network
+
+networks:
+  data_network:
+    driver: bridge
+    name: data_network
