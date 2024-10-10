@@ -1,0 +1,3 @@
+## Clone example dagster project
+dagster project from-example --example project_dagster_university_start --name etl_pipeline
+

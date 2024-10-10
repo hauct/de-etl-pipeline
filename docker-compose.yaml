@@ -1,19 +1,95 @@
 services:
-  mysql:
-    image: mysql:8.0
-    container_name: de_mysql
+  # mysql:
+  #   image: mysql:8.0
+  #   container_name: de_mysql
+  #   volumes:
+  #     - ./dataset:/tmp/dataset
+  #     - ./load_dataset_into_mysql:/tmp/load_dataset
+  #   ports:
+  #     - "3307:3306"
+  #   environment:
+  #     - MYSQL_DATABASE=${MYSQL_DATABASE}
+  #     - MYSQL_ROOT_USER=${MYSQL_ROOT_USER}
+  #     - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+  #     - MYSQL_USER=${MYSQL_USER}
+  #     - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+  #   networks:
+  #     - data_network
+
+  # de_dagster_dagit:
+  #   build:
+  #     context: ./docker_image/dagster
+  #     dockerfile: Dockerfile
+  #   entrypoint:
+  #     - dagit
+  #     - -h
+  #     - "0.0.0.0"
+  #     - -p
+  #     - "3001"
+  #     - -w
+  #     - workspace.yaml
+  #   container_name: de_dagster_dagit
+  #   ports:
+  #     - "3001:3001"
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #     - ./dagster_home:/opt/dagster/dagster_home
+  #   env_file:
+  #     - .env
+  #   networks:
+  #     - data_network
+  #   depends_on:
+  #     - de_psql
+
+  # de_dagster_daemon:
+  #   build:
+  #     context: ./docker_image/dagster
+  #     dockerfile: Dockerfile
+  #   entrypoint:
+  #     - dagster-daemon
+  #     - run
+  #   container_name: de_dagster_daemon
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #     - ./dagster_home:/opt/dagster/dagster_home
+  #   env_file:
+  #     - .env
+  #   networks:
+  #     - data_network
+  #   depends_on:
+  #     - de_psql
+
+  # de_psql:
+  #   image: postgres:14-alpine
+  #   container_name: de_psql
+  #   hostname: de_psql
+  #   volumes:
+  #     - ./pg_hba.conf:/tmp/pg_hba.conf
+  #     # - ./load_dataset:/tmp/load_dataset
+  #   command: ["postgres", "-c", "hba_file=/tmp/pg_hba.conf"]
+  #   expose:
+  #     - "5432"
+  #   ports:
+  #     - "5432:5432"
+  #   env_file: 
+  #     - .env
+  #   networks:
+  #     - data_network
+
+  etl_pipeline:
+    build:
+      context: ./etl_pipeline
+      dockerfile: Dockerfile
+    container_name: etl_pipeline
+    image: etl_pipeline:latest
+    user: root
     volumes:
-      - ./dataset:/tmp/dataset
-      - ./load_dataset_into_mysql:/tmp/load_dataset
-    ports:
-      - "3307:3306"
-    # env_file: .env
-    environment:
-      - MYSQL_DATABASE=metastore_db
-      - MYSQL_ROOT_USER=root
-      - MYSQL_USER=admin
-      - MYSQL_PASSWORD=admin
-      - MYSQL_ROOT_PASSWORD=admin
+      - ./etl_pipeline:/opt/dagster/app/etl_pipeline
+      - ./etl_pipeline/spark-defaults.conf:/usr/local/spark/conf/spark-defaults.conf
+    env_file:
+      - .env
+    expose:
+      - "4000"
     networks:
       - data_network
 
