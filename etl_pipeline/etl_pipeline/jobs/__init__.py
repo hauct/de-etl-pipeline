@@ -6,7 +6,7 @@ BRONZE = "bronze"
 SILVER = "silver"
 
 bronze_data_by_week = AssetSelection.groups(BRONZE)
-# source_data = AssetSelection.groups(SILVER)
+source_data = AssetSelection.groups(SILVER)
 
 # update_pipeline_job = define_asset_job(
 #     name="update_pipeline_job",
